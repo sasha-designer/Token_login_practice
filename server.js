@@ -17,8 +17,8 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "http://127.0.0.1:[본인의 포트번호]",
-      "http://localhost:[본인의 포트번호]",
+      "http://127.0.0.1:5501",
+      "http://localhost:5501",
     ],
     methods: ["OPTIONS", "POST", "GET", "DELETE"],
     credentials: true,
@@ -44,6 +44,11 @@ app.post("/", (req, res) => {
     // 이곳에 코드를 작성하세요.
     // 2. 응답으로 accessToken을 클라이언트로 전송하세요. (res.send 사용)
     // 이곳에 코드를 작성하세요.
+    const accessToken = jwt.sign({ userId: userInfo.user_id }, secretKey, { expiresIn: 1000 * 60 * 10 })
+    console.log(accessToken);
+
+    res.cookie("accessToken", accessToken)
+    res.send("토근 생성!")
   }
 });
 
@@ -53,6 +58,19 @@ app.get("/", (req, res) => {
   // 이곳에 코드를 작성하세요.
   // 4. 검증이 완료되면 유저정보를 클라이언트로 전송하세요.(res.send 사용)
   // 이곳에 코드를 작성하세요.
+  // console.log(req.cookies)
+  const { accessToken } = req.cookies;
+  // console.log(jwt.verify(accessToken, secretKey))
+  const payload = jwt.verify(accessToken, secretKey)
+  const userInfo = users.find(el => el.user_id === payload.userId)
+  return res.json(userInfo)
 });
+
+
+app.delete("/", (req, res) => {
+  res.clearCookie("accessToken")
+  res.send("로그아웃 성공!")
+
+})
 
 app.listen(3000, () => console.log("서버 실행!"));
