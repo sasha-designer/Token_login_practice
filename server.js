@@ -46,8 +46,9 @@ app.post("/", (req, res) => {
     // 이곳에 코드를 작성하세요.
     const accessToken = jwt.sign({ userId: userInfo.user_id }, secretKey, { expiresIn: 1000 * 60 * 10 })
     console.log(accessToken);
+    res.json(accessToken);
 
-    res.cookie("accessToken", accessToken)
+    res.cookie('accessToken', accessToken)
     res.send("토근 생성!")
   }
 });
@@ -63,7 +64,7 @@ app.get("/", (req, res) => {
   // console.log(jwt.verify(accessToken, secretKey))
   const payload = jwt.verify(accessToken, secretKey)
   const userInfo = users.find(el => el.user_id === payload.userId)
-  return res.json(userInfo)
+  res.json(userInfo)
 });
 
 

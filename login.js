@@ -10,31 +10,31 @@ const logoutButton = document.querySelector("#logout_button");
 
 axios.defaults.withCredentials = true;
 // 전역에서 관리
-let accessToken = "";
+// let accessToken = "";
 
 form.addEventListener("submit", (e) => e.preventDefault());
+let accessToken = "";
 
 function login() {
   const userId = idInput.value;
   const userPassword = passwordInput.value;
 
-  return (
+  return axios.post("http://localhost:3000", { userId, userPassword })
     // 유저 아이디와 비밀번호를 담아 서버에 post 요청
-    axios
-      .post("http://localhost:3000", { userId, userPassword })
-      // 받은 엑세스 토큰을 변수에 저장
-      .then((res) => (accessToken = res.data))
-  );
+
+    // 받은 엑세스 토큰을 변수에 저장
+    .then((res) => (accessToken = res.data))
+    ;
 }
 
 function logout() {
-  accessToken = "";
+  return axios.delete('http://localhost:3000')
 }
 
 function getUserInfo() {
   return axios.get("http://localhost:3000", {
     // header에 토큰을 넣어서 전송
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: { Authorization: `Bearer ${encodeURIComponent(accessToken)}` },
   });
 }
 
